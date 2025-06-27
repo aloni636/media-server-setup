@@ -4,10 +4,7 @@ set -e
 BASE_DIR="${HOME}/media-server"
 
 echo "Creating folders..."
-mkdir -p "${BASE_DIR}"/{downloads,tv}
-for service in sonarr jackett qbittorrent jellyfin bazarr prometheus grafana; do
-    mkdir -p "${BASE_DIR}/config/${service}"
-done
+mkdir -p "${BASE_DIR}"/{downloads,tv,movies}
 
 echo "Fixing ownership..."
 chown -R 1000:1000 "${BASE_DIR}"
