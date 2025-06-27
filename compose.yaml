@@ -1,0 +1,196 @@
+# version: "3.7"
+# networks:
+#   - monitoring:
+#     driver: bridge
+services:
+  # ========== Media Services Stack ========== #
+  sonarr:
+    image: linuxserver/sonarr
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Jerusalem
+    volumes:
+      - sonarr-storage:/config
+      - ${HOME}/media-server/downloads:/downloads
+      - ${HOME}/media-server/tv:/tv
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+
+  jackett:
+    image: linuxserver/jackett
+    container_name: jackett
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Jerusalem
+    volumes:
+      - jackett-storage:/config
+      - ${HOME}/media-server/downloads:/downloads
+    ports:
+      - 9117:9117
+    restart: unless-stopped
+
+  transmission:
+    image: linuxserver/transmission
+    container_name: transmission
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Jerusalem
+      - FILE__USER=/run/secrets/transmission_username
+      - FILE__PASS=/run/secrets/transmission_password
+    volumes:
+      - transmission-storage:/config
+      - ${HOME}/media-server/downloads:/downloads
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
+    secrets:
+      - transmission_username
+      - transmission_password
+    restart: unless-stopped
+
+  jellyfin:
+    image: linuxserver/jellyfin
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Jerusalem
+    # command: [
+    #   "sed",
+    #   "-i",
+    #   "'s|<EnableMetrics>false</EnableMetrics>|<EnableMetrics>true</EnableMetrics>|'",
+    #   "/etc/jellyfin/system.xml"
+    # ]
+    volumes:
+      - jellyfin-config:/config
+      - jellyfin-cache:/config
+      - ${HOME}/media-server/tv:/tv
+      - ${HOME}/media-server/downloads:/downloads
+    ports:
+      - 8096:8096
+    restart: unless-stopped
+
+  bazarr:
+    image: linuxserver/bazarr
+    container_name: bazarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Jerusalem
+    volumes:
+      - bazarr-storage:/config
+      - ${HOME}/media-server/tv:/tv
+      - ${HOME}/media-server/downloads:/downloads
+    ports:
+      - 6767:6767
+    restart: unless-stopped
+
+  # ========== Maintenance ========== #
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    # scheduled watchtower updaters every midnight
+    command: --cleanup --schedule "0 0 * * *"
+    restart: unless-stopped
+
+  # # ========== Monitoring Stack ========== #
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   container_name: prometheus
+  #   volumes:
+  #     - ./prometheus.yaml:/etc/prometheus/prometheus.yaml
+  #     - prometheus-storage:/prometheus
+  #   ports:
+  #     - 9090:9090
+  #   command:
+  #     - '--config.file=/etc/prometheus/prometheus.yaml'
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - node-exporter
+  #     - transmission-exporter
+  #     - cadvisor
+
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   container_name: grafana
+  #   secrets:
+  #     - gf_security_admin_user
+  #     - gf_security_admin_password
+  #   environment:
+  #     - GF_SECURITY_ADMIN_USER__FILE=/run/secrets/gf_security_admin_user
+  #     - GF_SECURITY_ADMIN_PASSWORD__FILE=/run/secrets/gf_security_admin_password
+  #   volumes:
+  #     - grafana-storage:/var/lib/grafana
+  #   ports:
+  #     - 3000:3000
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - prometheus
+
+  # cadvisor:
+  #   image: gcr.io/cadvisor/cadvisor:latest
+  #   container_name: cadvisor
+  #   volumes:
+  #     - /:/rootfs:ro
+  #     - /var/run:/var/run:ro
+  #     - /sys:/sys:ro
+  #     - /var/lib/docker/:/var/lib/docker:ro
+  #   ports:
+  #     - 8081:8080
+  #   restart: unless-stopped
+
+  # node-exporter:
+  #   image: prom/node-exporter:latest
+  #   container_name: node-exporter
+  #   ports:
+  #     - 9100:9100
+  #   restart: unless-stopped
+
+  # transmission-exporter:
+  #   image: metalmatze/transmission-exporter
+  #   container_name: transmission-exporter
+  #   command: [
+  #     "TRANSMISSION_USERNAME=$(cat /run/secrets/transmission_username);",
+  #     "TRANSMISSION_PASSWORD=$(cat /run/secrets/transmission_password)",
+  #   ]
+  #   environment:
+  #     - WEB_ADDR=19091
+  #   secrets:
+  #     - transmission_username
+  #     - transmission_password
+  #   depends_on:
+  #     - transmission
+  #   ports:
+  #     - 19091:19091
+  #   restart: unless-stopped
+
+volumes:
+  # Media Server configs
+  sonarr-storage:
+  jackett-storage:
+  transmission-storage:
+  jellyfin-config:
+  jellyfin-cache:
+  bazarr-storage:
+  
+  # Monitoring configs & data
+  # grafana-storage:
+  # prometheus-storage:
+
+secrets:
+  transmission_username:
+    file: ./secrets/transmission_username
+  transmission_password:
+    file: ./secrets/transmission_password
+  # gf_security_admin_user:
+  #   file: ./secrets/gf_security_admin_user
+  # gf_security_admin_password:
+  #   file: ./secrets/gf_security_admin_password
