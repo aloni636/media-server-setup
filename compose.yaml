@@ -69,7 +69,7 @@ services:
     # ]
     volumes:
       - jellyfin-config:/config
-      - jellyfin-cache:/config
+      - jellyfin-cache:/cache
       - ${HOME}/media-server/tv:/tv
       - ${HOME}/media-server/downloads:/downloads
     ports:
