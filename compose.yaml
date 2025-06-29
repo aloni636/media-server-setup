@@ -4,6 +4,35 @@
 #     driver: bridge
 services:
   # ========== Media Services Stack ========== #
+  # Bind mount volumes' accesses are broken down to:
+  # - Arr services (Sonarr, Radarr, Readarr and Lidarr) which need to access both download clients' files and media files to allow hard-linking
+  # - Download clients which need access to torrents directories
+  # - Media services which need access to media directory
+  # See: https://trash-guides.info/File-and-Folder-Structure/How-to-set-up/Docker/#breakdown-of-the-folder-structure
+  
+  # Download clients
+  transmission:
+    image: linuxserver/transmission
+    container_name: transmission
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Jerusalem
+      - FILE__USER=/run/secrets/transmission_username
+      - FILE__PASS=/run/secrets/transmission_password
+    volumes:
+      - transmission-storage:/config
+      - ${HOME}/media-server/data/torrents:/data/torrents
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
+    secrets:
+      - transmission_username
+      - transmission_password
+    restart: unless-stopped
+
+  # PVRs (arr services)
   sonarr:
     image: linuxserver/sonarr
     container_name: sonarr
@@ -13,9 +42,7 @@ services:
       - TZ=Europe/Jerusalem
     volumes:
       - sonarr-storage:/config
-      - ${HOME}/media-server/downloads:/downloads
-      - ${HOME}/media-server/tv:/tv
-      - ${HOME}/media-server/tv:/movies
+      - ${HOME}/media-server/data:/data
     ports:
       - 8989:8989
     restart: unless-stopped
@@ -29,32 +56,27 @@ services:
       - TZ=Europe/Jerusalem
     volumes:
       - jackett-storage:/config
-      - ${HOME}/media-server/downloads:/downloads
+      # blackhole watching is not supported by transmission (i.e. dumping .torrents files to be picked up by torrent clients)
+      # - /path/to/blackhole:/downloads
     ports:
       - 9117:9117
     restart: unless-stopped
 
-  transmission:
-    image: linuxserver/transmission
-    container_name: transmission
+  bazarr:
+    image: linuxserver/bazarr
+    container_name: bazarr
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Jerusalem
-      - FILE__USER=/run/secrets/transmission_username
-      - FILE__PASS=/run/secrets/transmission_password
     volumes:
-      - transmission-storage:/config
-      - ${HOME}/media-server/downloads:/downloads
+      - bazarr-storage:/config
+      - ${HOME}/media-server/data:/data
     ports:
-      - 9091:9091
-      - 51413:51413
-      - 51413:51413/udp
-    secrets:
-      - transmission_username
-      - transmission_password
+      - 6767:6767
     restart: unless-stopped
 
+  # Media clients
   jellyfin:
     image: linuxserver/jellyfin
     container_name: jellyfin
@@ -71,26 +93,10 @@ services:
     volumes:
       - jellyfin-config:/config
       - jellyfin-cache:/cache
-      - ${HOME}/media-server/tv:/tv
-      - ${HOME}/media-server/tv:/movies
+      - ${HOME}/media-server/data/media/tv:/tv
+      - ${HOME}/media-server/data/media/movies:/movies
     ports:
       - 8096:8096
-    restart: unless-stopped
-
-  bazarr:
-    image: linuxserver/bazarr
-    container_name: bazarr
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Jerusalem
-    volumes:
-      - bazarr-storage:/config
-      - ${HOME}/media-server/tv:/tv
-      - ${HOME}/media-server/tv:/movies
-      - ${HOME}/media-server/downloads:/downloads
-    ports:
-      - 6767:6767
     restart: unless-stopped
 
   # ========== Maintenance ========== #
