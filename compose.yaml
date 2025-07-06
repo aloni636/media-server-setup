@@ -31,8 +31,12 @@ services:
       - transmission_username
       - transmission_password
     restart: unless-stopped
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
 
   # PVRs (arr services)
+  # Shows
   sonarr:
     image: linuxserver/sonarr
     container_name: sonarr
@@ -47,6 +51,22 @@ services:
       - 8989:8989
     restart: unless-stopped
 
+  # Movies
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Jerusalem
+    volumes:
+      - radarr-config:/config
+      - ${HOME}/media-server/data:/data
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+
+  # Custom trackers
   jackett:
     image: linuxserver/jackett
     container_name: jackett
@@ -62,6 +82,7 @@ services:
       - 9117:9117
     restart: unless-stopped
 
+  # Subtitles management
   bazarr:
     image: linuxserver/bazarr
     container_name: bazarr
@@ -183,6 +204,7 @@ services:
 volumes:
   # Media Server configs
   sonarr-storage:
+  radarr-config:
   jackett-storage:
   transmission-storage:
   jellyfin-config:
