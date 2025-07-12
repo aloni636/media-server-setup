@@ -87,3 +87,6 @@ I have error loading config in:
 ```
 prometheus            | time=2025-06-27T05:26:27.569Z level=ERROR source=main.go:631 msg="Error loading config (--config.file=/etc/prometheus/prometheus.yml)" file=/etc/prometheus/prometheus.yml err="open /etc/prometheus/prometheus.yml: no such file or directory"
 ```
+
+# TODOs
+- [ ] Consider pairing up `ffsubsync` with Bazarr

@@ -130,37 +130,37 @@ services:
     command: --cleanup --schedule "0 0 * * *"
     restart: unless-stopped
 
-  # # ========== Monitoring Stack ========== #
-  # prometheus:
-  #   image: prom/prometheus:latest
-  #   container_name: prometheus
-  #   volumes:
-  #     - ./prometheus.yaml:/etc/prometheus/prometheus.yaml
-  #     - prometheus-storage:/prometheus
-  #   ports:
-  #     - 9090:9090
-  #   command:
-  #     - '--config.file=/etc/prometheus/prometheus.yaml'
-  #   restart: unless-stopped
+  # ========== Monitoring Stack ========== #
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - prometheus-storage:/prometheus
+    ports:
+      - 9090:9090
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+    restart: unless-stopped
   #   depends_on:
   #     - node-exporter
   #     - transmission-exporter
   #     - cadvisor
 
-  # grafana:
-  #   image: grafana/grafana:latest
-  #   container_name: grafana
-  #   secrets:
-  #     - gf_security_admin_user
-  #     - gf_security_admin_password
-  #   environment:
-  #     - GF_SECURITY_ADMIN_USER__FILE=/run/secrets/gf_security_admin_user
-  #     - GF_SECURITY_ADMIN_PASSWORD__FILE=/run/secrets/gf_security_admin_password
-  #   volumes:
-  #     - grafana-storage:/var/lib/grafana
-  #   ports:
-  #     - 3000:3000
-  #   restart: unless-stopped
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    # secrets:
+    #   - gf_security_admin_user
+    #   - gf_security_admin_password
+    # environment:
+    #   - GF_SECURITY_ADMIN_USER__FILE=/run/secrets/gf_security_admin_user
+    #   - GF_SECURITY_ADMIN_PASSWORD__FILE=/run/secrets/gf_security_admin_password
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    ports:
+      - 3000:3000
+    restart: unless-stopped
   #   depends_on:
   #     - prometheus
 
@@ -212,8 +212,8 @@ volumes:
   bazarr-storage:
   
   # Monitoring configs & data
-  # grafana-storage:
-  # prometheus-storage:
+  grafana-storage:
+  prometheus-storage:
 
 secrets:
   transmission_username:

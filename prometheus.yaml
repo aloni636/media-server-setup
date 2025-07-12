@@ -6,19 +6,20 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
-  - job_name: 'cadvisor'
-    static_configs:
-      - targets: ['cadvisor:8080']
+  # - job_name: 'cadvisor'
+  #   static_configs:
+  #     # `<host>:<ip>` Note that when <host> refers to a docker compose service, <host> is the name of the service
+  #     - targets: ['cadvisor:8080']
 
-  - job_name: 'node_exporter'
-    static_configs:
-      - targets: ['node_exporter:9100']
+  # - job_name: 'node_exporter'
+  #   static_configs:
+  #     - targets: ['node-exporter:9100']
 
-  - job_name: 'transmission-exporter'
-    static_configs:
-      - targets:
-        - 'transmission-exporter:19091'
+  # - job_name: 'transmission-exporter'
+  #   static_configs:
+  #     - targets:
+  #       - 'transmission-exporter:19091'
 
-  - job_name: 'jellyfin'
-    static_configs:
-      - targets: ['jellyfin:8096']
+  # - job_name: 'jellyfin'
+  #   static_configs:
+  #     - targets: ['jellyfin:8096']
