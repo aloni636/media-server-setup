@@ -92,7 +92,7 @@ services:
       - TZ=Europe/Jerusalem
     volumes:
       - bazarr-storage:/config
-      - ${HOME}/media-server/data:/data
+      - ${HOME}/media-server/data/media:/data/media
     ports:
       - 6767:6767
     restart: unless-stopped
@@ -114,8 +114,10 @@ services:
     volumes:
       - jellyfin-config:/config
       - jellyfin-cache:/cache
-      - ${HOME}/media-server/data/media/tv:/tv
-      - ${HOME}/media-server/data/media/movies:/movies
+      # Note: read-only mounts for media storage can be problematic for NFOs metadata saver
+      # See: https://forum.jellyfin.org/t-mount-media-dir-read-only
+      - ${HOME}/media-server/data/media/tv:/tv:ro
+      - ${HOME}/media-server/data/media/movies:/movies:ro
     ports:
       - 8096:8096
     restart: unless-stopped
