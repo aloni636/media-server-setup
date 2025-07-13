@@ -17,7 +17,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Europe/Jerusalem
+      - TZ=Asia/Jerusalem
       - FILE__USER=/run/secrets/transmission_username
       - FILE__PASS=/run/secrets/transmission_password
     volumes:
@@ -46,7 +46,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Europe/Jerusalem
+      - TZ=Asia/Jerusalem
     volumes:
       - sonarr-storage:/config
       - ${HOME}/media-server/data:/data
@@ -63,7 +63,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Europe/Jerusalem
+      - TZ=Asia/Jerusalem
     volumes:
       - radarr-config:/config
       - ${HOME}/media-server/data:/data
@@ -80,7 +80,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Europe/Jerusalem
+      - TZ=Asia/Jerusalem
     volumes:
       - jackett-storage:/config
       # blackhole watching is not supported by transmission (i.e. dumping .torrents files to be picked up by torrent clients)
@@ -98,7 +98,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Europe/Jerusalem
+      - TZ=Asia/Jerusalem
     volumes:
       - bazarr-storage:/config
       - ${HOME}/media-server/data/media:/data/media
@@ -115,7 +115,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Europe/Jerusalem
+      - TZ=Asia/Jerusalem
     # command: [
     #   "sed",
     #   "-i",
