@@ -34,6 +34,9 @@ services:
     dns:
       - 1.1.1.1
       - 8.8.8.8
+    # TODO: Pinpoint exact capabilities needed for transmission
+    # cap_drop: ["ALL"]
+    # cap_add: ["SETUID", "SETGID", "CHOWN"]
 
   # PVRs (arr services)
   # Shows
@@ -49,6 +52,8 @@ services:
       - ${HOME}/media-server/data:/data
     ports:
       - 8989:8989
+    cap_drop: ["ALL"]
+    cap_add: ["SETUID", "SETGID", "CHOWN"]
     restart: unless-stopped
 
   # Movies
@@ -64,6 +69,8 @@ services:
       - ${HOME}/media-server/data:/data
     ports:
       - 7878:7878
+    cap_drop: ["ALL"]
+    cap_add: ["SETUID", "SETGID", "CHOWN"]
     restart: unless-stopped
 
   # Custom trackers
@@ -80,6 +87,8 @@ services:
       # - /path/to/blackhole:/downloads
     ports:
       - 9117:9117
+    cap_drop: ["ALL"]
+    cap_add: ["SETUID", "SETGID", "CHOWN"]
     restart: unless-stopped
 
   # Subtitles management
@@ -95,6 +104,8 @@ services:
       - ${HOME}/media-server/data/media:/data/media
     ports:
       - 6767:6767
+    cap_drop: ["ALL"]
+    cap_add: ["SETUID", "SETGID", "CHOWN"]
     restart: unless-stopped
 
   # Media clients
@@ -120,6 +131,8 @@ services:
       - ${HOME}/media-server/data/media/movies:/movies:ro
     ports:
       - 8096:8096
+    cap_drop: ["ALL"]
+    cap_add: ["SETUID", "SETGID", "CHOWN"]  # Note: Hardware accelerated transcoding may need more capabilitie
     restart: unless-stopped
 
   # ========== Maintenance ========== #
