@@ -13,9 +13,14 @@ fi
 # load and validate
 echo "Validating environment variables..."
 export $(cat .env | xargs)
+
 # see https://www.gnu.org/software/bash/manual/bash.html#Shell-Parameter-Expansion
-: "${DATA:?missing DATA}"
-: "${COMPOSE_PROJECT_NAME:?missing COMPOSE_PROJECT_NAME}"
+function check_var { : "${!1:?missing $1}"; }
+
+check_var DATA
+check_var COMPOSE_PROJECT_NAME
+check_var TZ
+check_var LOCAL_BACKUP
 
 echo "Ensuring directories in ${DATA}..."
 mkdir -p "${DATA}/torrents"
