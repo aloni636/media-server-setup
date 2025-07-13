@@ -38,6 +38,24 @@ services:
     # cap_drop: ["ALL"]
     # cap_add: ["SETUID", "SETGID", "CHOWN"]
 
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - WEBUI_PORT=8080
+      - TORRENTING_PORT=6881
+    volumes:
+      - qbittorrent-config:/config
+      - ${HOME}/media-server/data/torrents:/data/torrents
+    ports:
+      - 8080:8080
+      - 6881:6881
+      - 6881:6881/udp
+    restart: unless-stopped
+
   # PVRs (arr services)
   # Shows
   sonarr:
@@ -222,6 +240,7 @@ volumes:
   radarr-config:
   jackett-storage:
   transmission-storage:
+  qbittorrent-config:
   jellyfin-config:
   jellyfin-cache:
   bazarr-storage:
