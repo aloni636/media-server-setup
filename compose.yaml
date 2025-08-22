@@ -22,7 +22,7 @@ services:
       - FILE__PASS=/run/secrets/transmission_password
     volumes:
       - transmission-storage:/config
-      - ${HOME}/media-server/data/torrents:/data/torrents
+      - ${DATA}/torrents:/data/torrents
     ports:
       - 9091:9091
       - 51413:51413
@@ -49,7 +49,7 @@ services:
       - TZ=Asia/Jerusalem
     volumes:
       - sonarr-storage:/config
-      - ${HOME}/media-server/data:/data
+      - ${DATA}:/data
     ports:
       - 8989:8989
     cap_drop: ["ALL"]
@@ -66,7 +66,7 @@ services:
       - TZ=Asia/Jerusalem
     volumes:
       - radarr-config:/config
-      - ${HOME}/media-server/data:/data
+      - ${DATA}:/data
     ports:
       - 7878:7878
     cap_drop: ["ALL"]
@@ -101,7 +101,7 @@ services:
       - TZ=Asia/Jerusalem
     volumes:
       - bazarr-storage:/config
-      - ${HOME}/media-server/data/media:/data/media
+      - ${DATA}/media:/data/media
     ports:
       - 6767:6767
     cap_drop: ["ALL"]
@@ -127,8 +127,8 @@ services:
       - jellyfin-cache:/cache
       # Note: read-only mounts for media storage can be problematic for NFOs metadata saver
       # See: https://forum.jellyfin.org/t-mount-media-dir-read-only
-      - ${HOME}/media-server/data/media/tv:/tv:ro
-      - ${HOME}/media-server/data/media/movies:/movies:ro
+      - ${DATA}/media/tv:/tv:ro
+      - ${DATA}/media/movies:/movies:ro
     ports:
       - 8096:8096
     cap_drop: ["ALL"]
