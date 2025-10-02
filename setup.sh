@@ -1,37 +1,39 @@
 #!/bin/bash
 set -e  # early exit when facing errors
 
+DEPLOYMENT="./deployment"
+
 # Verify .env file existence
-if [ -f ./.env ]
+if [ ! -f ./.env ]
 then
-  export $(cat .env | xargs)
-else
-  echo "Cannot find .env file. Make sure it exists. Use ./.env.example as a reference."
+  echo "Cannot find ./.env file. Create it and use ./.env.example for reference."
   exit 1
 fi
 
-# Verify required environment variables
-for var in DATA; do
-  if [ -z "${!var}" ]; then
-    echo "Missing $var environment variable. Check ./.env file."
-    exit 1
-  else
-    echo "Loaded environment variable: $var=${!var}"
-  fi
-done
+# load and validate
+echo "Validating environment variables..."
+export $(cat .env | xargs)
+# see https://www.gnu.org/software/bash/manual/bash.html#Shell-Parameter-Expansion
+: "${DATA:?missing DATA}"
+: "${COMPOSE_PROJECT_NAME:?missing COMPOSE_PROJECT_NAME}"
 
-echo "Creating directories..."
-mkdir -p "${DATA}"/torrents
-mkdir -p "${DATA}"/media/{tv,movies}
+echo "Ensuring directories in ${DATA}..."
+mkdir -p "${DATA}/torrents"
+mkdir -p "${DATA}/media/{tv,movies}"
 
-echo "Fixing ownership and permissions..."
+echo "Ensuring ownership and permissions..."
 sudo chown --recursive 1000:1000 "${DATA}"
-chmod --recursive +x *-custom-cont-init.d
 
-read -p "Do you want to start Docker Compose? [y/N]" answer
-if [[ "$answer" == "y" ]]; then 
-  echo "Starting Docker Compose..."
-  cd "$(dirname "$0")"
-  docker compose -f compose.yaml up -d
-fi
+echo "Ensuing ${DEPLOYMENT} directory..."
+mkdir -p "${DEPLOYMENT}"
+
+echo "Shutting down previous deployment..."
+docker compose --project-directory ${DEPLOYMENT} -f compose.yaml down
+
+echo "Copying to deployment directory..."
+rm -rf ${DEPLOYMENT}/*
+cp -r compose.yaml .env ./secrets ${DEPLOYMENT}
+
+echo "Starting Docker Compose as ${DEPLOYMENT}..."
+docker compose --project-directory ${DEPLOYMENT} -f compose.yaml up -d
 
