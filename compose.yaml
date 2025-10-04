@@ -95,6 +95,23 @@ services:
     labels:
       - docker-volume-backup.stop-during-backup=true
 
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+    volumes:
+      - prowlarr-config:/config
+    ports:
+      - 9696:9696
+    cap_drop: [ "ALL" ]
+    cap_add: [ "SETUID", "SETGID", "CHOWN" ]
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=true
+
   # Subtitles management
   bazarr:
     image: linuxserver/bazarr
@@ -191,6 +208,7 @@ services:
       - jellyfin-config:/backup/jellyfin-config:ro
       - jellyfin-cache:/backup/jellyfin-cache:ro
       - jellyseer-config:/backup/jellyseer-config:ro
+      - prowlarr-config:/backup/prowlarr-config:ro
 
       # binding docker socket to docker-volume-backup allows it to stop containers during backup
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -210,6 +228,7 @@ volumes:
   sonarr-config:
   radarr-config:
   jackett-config:
+  prowlarr-config:
   qbittorrent-config:
   bazarr-config:
   jellyfin-config:
