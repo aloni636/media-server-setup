@@ -32,13 +32,12 @@ sudo chown --recursive 1000:1000 "${DATA}"
 echo "Ensuing ${DEPLOYMENT} directory..."
 mkdir -p "${DEPLOYMENT}"
 
-echo "Shutting down previous deployment..."
-docker compose --project-directory ${DEPLOYMENT} -f compose.yaml down
-
 echo "Copying to deployment directory..."
 rm -rf ${DEPLOYMENT}/*
 cp -r compose.yaml .env ./secrets ${DEPLOYMENT}
 
-echo "Starting Docker Compose as ${DEPLOYMENT}..."
+echo "Starting Docker Compose at ${DEPLOYMENT}..."
+# docker compose automatically picks up changes and recreate only the necessary containers
+# see https://docs.docker.com/reference/cli/docker/compose/up/#description
 docker compose --project-directory ${DEPLOYMENT} -f compose.yaml up -d
 
