@@ -175,53 +175,7 @@ services:
     labels:
       - docker-volume-backup.stop-during-backup=true
 
-  # ========== Maintenance ========== #
-  watchtower:
-    image: containrrr/watchtower
-    container_name: watchtower
-    environment:
-      - TZ=${TZ}
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    # (6 field) cron expression to schedule watchtower updaters every night at 4 o'clock
-    # see https://containrrr.dev/watchtower/arguments/#scheduling
-    command: --cleanup --schedule "0 0 4 * * *"
-    restart: unless-stopped
-
-  # see https://offen.github.io/docker-volume-backup/
-  backup:
-    image: offen/docker-volume-backup:latest
-    container_name: backup
-    environment:
-      # backup every night at 4 15 o'clock (right after watchtower updates, to avoid service shutdown overlap)
-      - BACKUP_CRON_EXPRESSION=0 15 4 * * *
-      - BACKUP_RETENTION_DAYS=7
-      # TODO: figure out how to setup service type drive API client
-      # - GOOGLE_DRIVE_CREDENTIALS_JSON_FILE=/run/secrets/drive_credentials
-      # - GOOGLE_DRIVE_FOLDER_ID_FILE=/run/secrets/drive_folder_id
-    volumes:
-      - sonarr-config:/backup/sonarr-config:ro
-      - radarr-config:/backup/radarr-config:ro
-      - bazarr-config:/backup/bazarr-config:ro
-      - jackett-config:/backup/jackett-config:ro
-      - qbittorrent-config:/backup/qbittorrent-config:ro
-      - jellyfin-config:/backup/jellyfin-config:ro
-      - jellyfin-cache:/backup/jellyfin-cache:ro
-      - jellyseer-config:/backup/jellyseer-config:ro
-      - prowlarr-config:/backup/prowlarr-config:ro
-
-      # binding docker socket to docker-volume-backup allows it to stop containers during backup
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${LOCAL_BACKUP}:/archive
-
-      # Note: local timezone is used instead of TZ env-variable because tzdata package is omitted from the image
-      # see https://offen.github.io/docker-volume-backup/how-tos/set-container-timezone.html
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
-    # secrets:
-    #   - drive_credentials
-    #   - drive_folder_id
-    restart: unless-stopped
+  
 
 # Media Server configs
 volumes:
@@ -235,8 +189,4 @@ volumes:
   jellyfin-cache:
   jellyseer-config:
 
-    # secrets:
-    # drive_credentials:
-    #   file: ./secrets/drive_credentials.json
-    # drive_folder_id:
-    #   file: ./secrets/drive_folder_id
+

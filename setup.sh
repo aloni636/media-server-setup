@@ -2,6 +2,7 @@
 set -e  # early exit when facing errors
 
 DEPLOYMENT="./deployment"
+COMPOSE_FILES=("compose.yaml" "compose.maintenance.yaml")
 
 # Verify .env file existence
 if [ ! -f ./.env ]
@@ -34,10 +35,8 @@ mkdir -p "${DEPLOYMENT}"
 
 echo "Copying to deployment directory..."
 rm -rf ${DEPLOYMENT}/*
-cp -r compose.yaml .env ./secrets ${DEPLOYMENT}
+cp -r ${COMPOSE_FILES[@]} .env ./secrets ${DEPLOYMENT}
 
-echo "Starting Docker Compose at ${DEPLOYMENT}..."
-# docker compose automatically picks up changes and recreate only the necessary containers
-# see https://docs.docker.com/reference/cli/docker/compose/up/#description
-docker compose --project-directory ${DEPLOYMENT} -f compose.yaml up -d
+echo "Deploying at ${DEPLOYMENT} with ${COMPOSE_FILES[@]}..."
+docker compose --project-directory ${DEPLOYMENT} ${COMPOSE_FILES[@]/#/-f } up -d
 
