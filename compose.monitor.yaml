@@ -20,12 +20,6 @@ services:
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
-    secrets:
-      - gf_security_admin_user
-      - gf_security_admin_password
-    environment:
-      - GF_SECURITY_ADMIN_USER__FILE=/run/secrets/gf_security_admin_user
-      - GF_SECURITY_ADMIN_PASSWORD__FILE=/run/secrets/gf_security_admin_password
     volumes:
       - grafana-storage:/var/lib/grafana
     ports:
@@ -63,10 +57,3 @@ services:
 volumes:
   grafana-storage:
   prometheus-storage:
-
-
-secrets:
-  gf_security_admin_user:
-    file: ./secrets/gf_security_admin_user
-  gf_security_admin_password:
-    file: ./secrets/gf_security_admin_password

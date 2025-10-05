@@ -37,7 +37,7 @@ mkdir -p "${DEPLOYMENT}"
 
 echo "Copying to deployment directory..."
 rm -rf ${DEPLOYMENT}/*
-cp -r ${COMPOSE_FILES[@]} .env prometheus.yaml jellyfin ./secrets ${DEPLOYMENT}
+cp -r ${COMPOSE_FILES[@]} .env prometheus.yaml jellyfin ${DEPLOYMENT}
 
 echo "Deploying at ${DEPLOYMENT} with ${COMPOSE_FILES[@]}..."
 docker compose --project-directory ${DEPLOYMENT} ${COMPOSE_FILES[@]/#/-f } up -d --remove-orphans
