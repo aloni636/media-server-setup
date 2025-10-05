@@ -2,7 +2,9 @@
 set -e  # early exit when facing errors
 
 DEPLOYMENT="./deployment"
-COMPOSE_FILES=("compose.yaml" "compose.maintenance.yaml")
+# Note: order matters, as docker compose -f merges to down.
+# Shared resources should at the start of the list.
+COMPOSE_FILES=("compose.yaml" "compose.monitor.yaml" "compose.maintenance.yaml" )
 
 # Verify .env file existence
 if [ ! -f ./.env ]
@@ -25,7 +27,7 @@ check_var LOCAL_BACKUP
 
 echo "Ensuring directories in ${DATA}..."
 mkdir -p "${DATA}/torrents"
-mkdir -p "${DATA}/media/{tv,movies}"
+mkdir -p "${DATA}/media"/{tv,movies}
 
 echo "Ensuring ownership and permissions..."
 sudo chown --recursive 1000:1000 "${DATA}"
@@ -35,8 +37,8 @@ mkdir -p "${DEPLOYMENT}"
 
 echo "Copying to deployment directory..."
 rm -rf ${DEPLOYMENT}/*
-cp -r ${COMPOSE_FILES[@]} .env ./secrets ${DEPLOYMENT}
+cp -r ${COMPOSE_FILES[@]} .env prometheus.yaml jellyfin ./secrets ${DEPLOYMENT}
 
 echo "Deploying at ${DEPLOYMENT} with ${COMPOSE_FILES[@]}..."
-docker compose --project-directory ${DEPLOYMENT} ${COMPOSE_FILES[@]/#/-f } up -d
+docker compose --project-directory ${DEPLOYMENT} ${COMPOSE_FILES[@]/#/-f } up -d --remove-orphans
 

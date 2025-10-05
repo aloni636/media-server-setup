@@ -32,7 +32,8 @@ services:
       - jellyfin-config:/backup/jellyfin-config:ro
       - jellyfin-cache:/backup/jellyfin-cache:ro
       - jellyseer-config:/backup/jellyseer-config:ro
-      - prowlarr-config:/backup/prowlarr-config:ro
+      - grafana-storage:/backup/grafana-storage:ro
+      - prometheus-storage:/backup/prometheus-storage:ro
 
       # binding docker socket to docker-volume-backup allows it to stop containers during backup
       - /var/run/docker.sock:/var/run/docker.sock:ro
