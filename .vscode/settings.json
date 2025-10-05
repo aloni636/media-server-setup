@@ -7,7 +7,6 @@
         "healthcheck",
         "jackett",
         "jellyfin",
-        "jellyseer",
         "jellyseerr",
         "Lidarr",
         "localtime",

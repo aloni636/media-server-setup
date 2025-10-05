@@ -31,7 +31,7 @@ services:
       - qbittorrent-config:/backup/qbittorrent-config:ro
       - jellyfin-config:/backup/jellyfin-config:ro
       - jellyfin-cache:/backup/jellyfin-cache:ro
-      - jellyseer-config:/backup/jellyseer-config:ro
+      - jellyseerr-config:/backup/jellyseerr-config:ro
       - grafana-storage:/backup/grafana-storage:ro
       - prometheus-storage:/backup/prometheus-storage:ro
 

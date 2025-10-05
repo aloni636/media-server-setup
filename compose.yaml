@@ -148,7 +148,7 @@ services:
     ports:
       - 5055:5055
     volumes:
-      - jellyseer-config:/app/config
+      - jellyseerr-config:/app/config
     healthcheck:
       test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
       start_period: 20s
@@ -168,6 +168,6 @@ volumes:
   bazarr-config:
   jellyfin-config:
   jellyfin-cache:
-  jellyseer-config:
+  jellyseerr-config:
 
 
