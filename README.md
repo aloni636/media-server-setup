@@ -1,12 +1,13 @@
 # TODOs
-- [ ] Track config changes by periodically crawling each service
+- [ ] Add [decluttarr](https://github.com/ManiMatter/decluttarr)
+- [ ] Add [Raspberry Pi V4L2 hardware acceleration](https://docs.linuxserver.io/images/docker-jellyfin/?utm_source=chatgpt.com#v4l2-raspberry-pi)
 - [ ] Add docker rollout for zero downtime deployments
 
 ## Security
-- [ ] Add clamav post download hook to the torrenting client
 - [ ] Segment network between arr and jellyfin
 
 # Security
+## Docker Container Capabilities
 - `CHOWN` capability is necessary for root directories permission modification as startup (like `/app` for Jellyfin, etc).
 
 # Mounting Hard Drives
